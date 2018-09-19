@@ -10,18 +10,13 @@ var nameDir;
 
 const server = net.createServer((client) => {
   console.log('--------------- Connected client: ' + (++id) + ' ---------------');
+
   nameDir = 'Config' + id;
-  fs.mkdirSync(nameDir);
+  fs.mkdir(nameDir, function (err, data) {
+
+  });
 
   client.setEncoding('utf8');
-
-  var formJSON = fs.readFileSync('./qa.json', 'utf8');
-
-  let str = JSON.parse(formJSON, function (key, value) {
-    let quest = new question(key, value);
-    arrQuestion.push(quest);
-  });
-  arrQuestion.pop();
 
   client.on('data', (data) => {
     //console.log(data);
@@ -31,23 +26,11 @@ const server = net.createServer((client) => {
     else if(data == 'DEC') {
       client.write('DEC');
     }
-    else if(data.indexOf('ask') == 0){
-      //console.log(data.substring(3));
-
-      arrQuestion.sort(compareRandom);
-      max = arrQuestion.length;
-
-      var rand = max * Math.random();
-      rand = Math.floor(rand);
-
-      console.log('Вопрос: ' + data.substring(3) + ' ' + 'Ответ: ' + arrQuestion[rand].answer);
-      client.write('answer' + arrQuestion[rand].answer);
-    }
     else if(data.indexOf('arr') == 0){
       var dirr = data.substring(3);
 
       var arr = dirr.split(',');
-
+      console.log(arr);
       for(var c = 2; c < arr.length; c++){
         if(fs.statSync(arr[c]).isDirectory()){
           fs.readdir(arr[c], function (err, file) {
